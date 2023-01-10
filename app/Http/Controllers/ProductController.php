@@ -14,7 +14,34 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::all();
+        
+     //$products=Product::all();
+        // From URL to get webpage contents.
+        $fornecedor1 = $this->fetchProductAllOrById("http://616d6bdb6dacbb001794ca17.mockapi.io/devnology/brazilian_provider");
+        $fornecedor2 = $this->fetchProductAllOrById("http://616d6bdb6dacbb001794ca17.mockapi.io/devnology/european_provider");
+               
+        $fornecedor1 = json_decode($fornecedor1, TRUE);
+        $fornecedor2 = json_decode($fornecedor2, TRUE);
+
+
+        $products = array_merge($fornecedor1, $fornecedor2);     
+        return $products;
+    }
+
+    private function fetchProductAllOrById($url)
+    {
+        // Initialize a CURL session.
+        $ch = curl_init();
+        
+        // Return Page contents.
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        //grab URL and pass it to the variable.
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        $product = curl_exec($ch);
+
+        return $product;
     }
 
     /**
@@ -44,10 +71,13 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($provider, $id)
     {
-        return Product::find($id);
-    }
+
+        $url = "http://616d6bdb6dacbb001794ca17.mockapi.io/devnology/$provider/$id";
+      
+        return $this->fetchProductAllOrById($url);
+    }     
 
     /**
      * Update the specified resource in storage.

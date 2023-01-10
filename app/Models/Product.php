@@ -18,4 +18,9 @@ class Product extends Model
         'material',
         'departamento',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'id';
+    }
 }

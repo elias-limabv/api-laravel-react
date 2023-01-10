@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Product;
+use App\Http\Resources\ProductResource;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\ProductListAll;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,36 +19,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::resource('products', ProductController::class);
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 
-/*Route::get('/products', function() {
-    return Product::all();
-});
-//Route::get('/products', function() {
-    return 'products';
-//});
+Route::resource('products', ProductController::class);
 
-Route::post('/products', function() {
-    return Product::create([
-        'nome' => 'Product one',
-        'descricao' => 'this is product one',
-        'categoria' => 'this is categoria one',
-        'imagem' => 'this is imagem one',
-        'preco' => '99.99',
-        'material' => 'this is material one',
-        'departamento' => 'this is departamento one'
-    ]);
-});*/
-
-//Route::resource('products', ProductController::class);
-
-Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/products/{provider}/{id}', [ProductController::class, 'show']);
 Route::get('/products/search/{nome}', [ProductController::class, 'search']);
+
+//Route::apiResource('products', 'api\ProductController');
+
+// list product by id
+Route::get('/products/{id}', function ($id) {
+    return new ProductResource(User::findOrFail($id));
+});
+
+// list all products
+Route::get('/products', [ProductController::class, 'index']);
 
 
 // Protected routes
@@ -58,7 +50,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
